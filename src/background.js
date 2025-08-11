@@ -1,17 +1,25 @@
 let qrText = "";
 
 browser.menus.create({
-	id: "qr_code",
-	title: "Generate QR Code",
+	id: "qr_code_selection",
+	title: "QR Code from Selection",
 	documentUrlPatterns: ["https://*/*", "http://*/*"],
-	contexts: ["link", "selection"]
+	contexts: ["selection"]
+})
+
+browser.menus.create({
+	id: "qr_code_link",
+	title: "QR Code from Link",
+	documentUrlPatterns: ["https://*/*", "http://*/*"],
+	contexts: ["link"]
 })
 
 browser.menus.onClicked.addListener(async (info, tab) => {
-	if (info.linkUrl) {
+	console.log(info);
+	if (info.menuItemId === "qr_code_link") {
 		qrText = info.linkUrl;
 		browser.pageAction.openPopup();
-	} else if (info.selectionText) {
+	} else if (info.menuItemId === "qr_code_selection") {
 		qrText = info.selectionText;
 		browser.pageAction.openPopup();
 	}
