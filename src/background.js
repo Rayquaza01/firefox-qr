@@ -15,7 +15,6 @@ browser.menus.create({
 })
 
 browser.menus.onClicked.addListener(async (info, tab) => {
-	console.log(info);
 	if (info.menuItemId === "qr_code_link") {
 		qrText = info.linkUrl;
 		browser.pageAction.openPopup();
