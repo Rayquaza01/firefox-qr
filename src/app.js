@@ -39,19 +39,22 @@ function drawQr(text){
 
 }
 
-browser.tabs.query({currentWindow: true, active: true})
-	.then(function onGot(tabInfo){
-		const url = tabInfo[0].url;
-		$text.value = url;
-		drawQr(url);
-	}, console.log);
-
-browser.runtime.sendMessage("getQRText").then(qrText => {
-	if (qrText) {
-		$text.value = qrText;
-		drawQr(qrText);
-	}
-});
+const query = new URLSearchParams(window.location.search);
+if (query.has("qr")) {
+    $text.value = query.get("qr");
+    drawQr(query.get("qr"));
+    browser.pageAction.setPopup({
+        tabId: parseInt(query.get("tabId")),
+        popup: null
+    });
+} else {
+    browser.tabs.query({currentWindow: true, active: true})
+        .then(function onGot(tabInfo){
+            const url = tabInfo[0].url;
+            $text.value = url;
+            drawQr(url);
+        }, console.log);
+}
 
 $text.addEventListener("input", function(e){
 	drawQr(this.value);

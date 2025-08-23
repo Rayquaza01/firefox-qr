@@ -1,5 +1,3 @@
-let qrText = "";
-
 browser.menus.create({
 	id: "qr_code_selection",
 	title: "QR Code from Selection",
@@ -15,20 +13,24 @@ browser.menus.create({
 })
 
 browser.menus.onClicked.addListener(async (info, tab) => {
+    const query = new URLSearchParams();
+
+    // tab id is always required when using setPopup
+    query.set("tabId", tab.id)
+
 	if (info.menuItemId === "qr_code_link") {
-		qrText = info.linkUrl;
+        query.set("qr", info.linkUrl);
+        browser.pageAction.setPopup({
+            tabId: tab.id,
+            popup: "popup.html?" + query.toString()
+        });
 		browser.pageAction.openPopup();
 	} else if (info.menuItemId === "qr_code_selection") {
-		qrText = info.selectionText;
+        query.set("qr", info.selectionText);
+        browser.pageAction.setPopup({
+            tabId: tab.id,
+            popup: "popup.html?" + query.toString()
+        });
 		browser.pageAction.openPopup();
-	}
-});
-
-// based on this example: https://github.com/mdn/webextensions-examples/blob/main/menu-remove-element/background.js
-browser.runtime.onMessage.addListener(async (msg) => {
-	if (msg === "getQRText") {
-		let res = qrText;
-		qrText = ""
-		return res;
 	}
 });
